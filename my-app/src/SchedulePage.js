@@ -6,6 +6,14 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './SchedulePage.css';
 
+
+
+// Define the API base URL and port as constants
+const API_HOST = 'http://localhost';
+const API_PORT = 1234;
+
+// Construct the full API base URL
+const API_BASE_URL = `${API_HOST}:${API_PORT}`;
 function SchedulePage({ userType, onLogout, token }) {
   const [mySlots, setMySlots] = useState([]);
   const [newDate, setNewDate] = useState('');
@@ -50,7 +58,7 @@ function SchedulePage({ userType, onLogout, token }) {
 
       try {
         // Send the new slot to the backend for storage
-        const response = await axios.post('http://localhost:8080/create-slot', newSlot, {
+        const response = await axios.post(`${API_BASE_URL}/create-slot`, newSlot, {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
           },
@@ -74,7 +82,7 @@ function SchedulePage({ userType, onLogout, token }) {
     const slotToRemove = mySlots[index];
 
     try {
-      await axios.delete(`http://localhost:8080/create-slot/${slotToRemove}`);
+      await axios.delete(`${API_BASE_URL}/create-slot/${slotToRemove}`);
       const updatedSlots = [...mySlots];
       updatedSlots.splice(index, 1);
       setMySlots(updatedSlots);

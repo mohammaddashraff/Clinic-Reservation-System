@@ -4,6 +4,12 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './SignIn.css';
 
+// Define the API base URL and port as constants
+const API_HOST = 'http://localhost';
+const API_PORT = 1234;
+
+// Construct the full API base URL
+const API_BASE_URL = `${API_HOST}:${API_PORT}`;
 function SignIn({ handleSuccessfulAuth }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +19,8 @@ function SignIn({ handleSuccessfulAuth }) {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8080/signin', { email, password });
+      // eslint-disable-next-line no-template-curly-in-string
+      const response = await axios.post(`${API_BASE_URL}/signin`, { email, password });
 
       const { userType, userID, token } = response.data;
 
@@ -36,41 +43,41 @@ function SignIn({ handleSuccessfulAuth }) {
   };
 
   return (
-    <div className="d-flex vh-100 justify-content-center align-items-center">
-      <div className="p-3 signin-container">
-        <h2 className="mb-4">Sign In</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              placeholder="Enter Email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              placeholder="Enter Password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          {errorMessage && (
-            <div className="alert alert-danger mt-3" role="alert">
-              {errorMessage}
+      <div className="d-flex vh-100 justify-content-center align-items-center">
+        <div className="p-3 signin-container">
+          <h2 className="mb-4">Sign In</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="email">Email</label>
+              <input
+                  type="email"
+                  placeholder="Enter Email"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
-          )}
-          <button className="btn btn-primary" type="submit">
-            Sign In
-          </button>
-        </form>
+            <div className="mb-3">
+              <label htmlFor="password">Password</label>
+              <input
+                  type="password"
+                  placeholder="Enter Password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            {errorMessage && (
+                <div className="alert alert-danger mt-3" role="alert">
+                  {errorMessage}
+                </div>
+            )}
+            <button className="btn btn-primary" type="submit">
+              Sign In
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
   );
 }
 

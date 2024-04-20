@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+// Define the API base URL and port as constants
+const API_HOST = 'http://localhost';
+const API_PORT = 1234;
+
+// Construct the full API base URL
+const API_BASE_URL = `${API_HOST}:${API_PORT}`;
 
 function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }) {
   const [doctors, setDoctors] = useState([]);
@@ -28,7 +34,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
   }
 
   function formatSlotTime(timeString) {
-   // console.log('Original timeString:', timeString);
+    // console.log('Original timeString:', timeString);
 
     if (!timeString) {
       return 'Invalid Time';
@@ -57,7 +63,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
 
   const fetchDoctorNames = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/view-all-doctors', {
+      const response = await axios.get(`${API_BASE_URL}/view-all-doctors`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         },
@@ -91,7 +97,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
 
     try {
       const response = await axios.post(
-          'http://localhost:8080/select-dr',
+        `${API_BASE_URL}/select-dr`,
           {
             doctorName: selectedDoctorName,
           },
@@ -133,7 +139,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
       // Set doctorSlots to an empty array first
       setDoctorSlots([]);
 
-      const response = await axios.get('http://localhost:8080/view-avail-slot', {
+      const response = await axios.get(`${API_BASE_URL}/view-avail-slot`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         },
@@ -176,7 +182,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
         setLoading(true);
 
         const response = await axios.post(
-            'http://localhost:8080/choose-slot',
+          `${API_BASE_URL}/choose-slot`,
             {
               slotID: selectedSlot.slotID,
             },
@@ -215,7 +221,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
         console.log('Old Slot:', selectedSlot);
         console.log('New Slot:', selectedNewSlot);
 
-        const responseCreateNewAppointment = await axios.post('http://localhost:8080/choose-slot', {
+        const responseCreateNewAppointment = await axios.post(`${API_BASE_URL}/choose-slot`, {
           slotID: selectedNewSlot.slotID,
         });
 
@@ -224,7 +230,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
 
           // Now, cancel the old appointment
           const oldSlotID = updateMode ? selectedReservation.slotID : null;
-          const responseCancelOldAppointment = await axios.delete(`http://localhost:8080/cancel-appointment/${oldSlotID}`);
+          const responseCancelOldAppointment = await axios.delete(`${API_BASE_URL}/cancel-appointment/${oldSlotID}`);
 
           if (responseCancelOldAppointment.data.success) {
             // Handle the update success
@@ -298,7 +304,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
       try {
         setLoading(true);
 
-        const response = await axios.delete(`http://localhost:8080/cancel-appointment/${selectedSlot.scheduleID}`);
+        const response = await axios.delete(`${API_BASE_URL}/cancel-appointment/${selectedSlot.scheduleID}`);
 
         if (response.data.success) {
           console.log('Appointment canceled successfully!');
@@ -317,7 +323,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
 
   const fetchAllReservations = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/get-all-reservations/${userID}`);
+      const response = await axios.get(`${API_BASE_URL}/get-all-reservations/${userID}`);
       console.log(userID)
       if (response.data.success) {
 
@@ -339,7 +345,7 @@ function PatientPage({ userType, handleSuccessfulAuth, userID, onLogout, token }
     try {
       setLoading(true);
 
-      const response = await axios.delete(`http://localhost:8080/cancel-appointment/${appointmentID}`);
+      const response = await axios.delete(`${API_BASE_URL}/cancel-appointment/${appointmentID}`);
 
       if (response.data.success) {
         console.log('Appointment canceled successfully!');
