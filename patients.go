@@ -103,6 +103,32 @@ func chooseSlot(slotID int) error {
 	return err
 }
 
+func getAllDoctorNames() ([]Doctor, error) {
+	conn, err := sql.Open("postgres", connectionStr)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	rows, err := conn.Query(`SELECT username FROM "user" where usertype = $1`, "doctor")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var doctors []Doctor
+	for rows.Next() {
+		var doctor Doctor
+		err := rows.Scan(&doctor.Name)
+		if err != nil {
+			return nil, err
+		}
+		doctors = append(doctors, doctor)
+	}
+
+	return doctors, nil
+}
+
 func getDoctorSchedulesHandler(w http.ResponseWriter, r *http.Request) {
 	schedules, err := getAvailSlots()
 	if err != nil || DoctorID == 0 {
@@ -208,31 +234,6 @@ func chooseSlotHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Slot created successfully")
 }
 
-func getAllDoctorNames() ([]Doctor, error) {
-	conn, err := sql.Open("postgres", connectionStr)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-
-	rows, err := conn.Query(`SELECT username FROM "user" where usertype = $1`, "doctor")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var doctors []Doctor
-	for rows.Next() {
-		var doctor Doctor
-		err := rows.Scan(&doctor.Name)
-		if err != nil {
-			return nil, err
-		}
-		doctors = append(doctors, doctor)
-	}
-
-	return doctors, nil
-}
 func getAllDoctorNamesHandler(w http.ResponseWriter, r *http.Request) {
 	doctors, err := getAllDoctorNames()
 	if err != nil {

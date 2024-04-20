@@ -7,6 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/dgrijalva/jwt-go"
 	_ "github.com/lib/pq"
+	"html"
 	"net/http"
 	"time"
 )
@@ -59,7 +60,6 @@ func signUp(name string, password string, userType string, email string) error {
 }
 
 func signIn(email string, password string) (error, string, int) {
-	connectionStr := "user=postgres password=asdyfe2rd dbname=webclinic host=db-container port=5432 sslmode=disable"
 	conn, err := sql.Open("postgres", connectionStr)
 	if errors.Is(err, sql.ErrNoRows) {
 		return err, "", 0
@@ -92,6 +92,10 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+	//prevent cross site scripting
+	user.Password = html.EscapeString(user.Password)
+	user.Email = html.EscapeString(user.Email)
+
 	err, token, username := signIn(user.Email, user.Password)
 	if err != nil {
 		response := map[string]interface{}{
@@ -139,6 +143,11 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	user.Name = html.EscapeString(user.Name)
+	user.Password = html.EscapeString(user.Password)
+	user.UserType = html.EscapeString(user.UserType)
+	user.Email = html.EscapeString(user.Email)
 
 	// Perform sign-up logic (replace with your own sign-up logic)
 	err = signUp(user.Name, user.Password, user.UserType, user.Email)
